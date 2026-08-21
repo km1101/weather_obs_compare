@@ -190,14 +190,23 @@ else:
 st.sidebar.subheader("Platforms")
 selected_platforms = st.sidebar.multiselect(
     "Platforms to compare", options=all_platforms,
-    default=all_platforms[: min(2, len(all_platforms))],
-    help="Add more platforms any time — nothing here is hard-coded to a specific buoy pair or parameter.",
+    default=all_platforms[: min(4, len(all_platforms))],
+    help="Add more platforms",
 )
 
 st.sidebar.subheader("Parameters")
 selected_params = st.sidebar.multiselect(
     "Parameter(s)", options=ordered_params,
-    default=[ordered_params[0]] if ordered_params else [],
+    default=[
+        ordered_params[0],
+        ordered_params[1],
+        ordered_params[2],
+        ordered_params[3],
+        ordered_params[4],
+        ordered_params[5],
+        ordered_params[6],
+        ordered_params[7],
+    ] if ordered_params else [],
 )
 
 st.sidebar.subheader("Timestamp matching")
@@ -297,24 +306,6 @@ tabs = st.tabs([
 # Summary tab
 # ---------------------------------------------------------------------------
 with tabs[0]:
-    st.subheader("Descriptive statistics")
-    multi_rows = []
-    for p in selected_params:
-        for platform, sub in filtered.groupby("platform"):
-            row = stats_mod.descriptive_stats(sub[p])
-            row["parameter"] = p
-            row["platform"] = platform
-            multi_rows.append(row)
-    df_summary = pd.DataFrame(multi_rows)
-
-    # Put parameter first and platform second.
-    cols = ["parameter", "platform"] + [
-        c for c in df_summary.columns if c not in ["parameter", "platform"]
-    ]
-    df_summary = df_summary[cols]
-
-    st.dataframe(df_summary.style.format(precision=3), use_container_width=True, hide_index=True)
-
     if pair_ready:
         matched = get_matched(param)
         st.subheader(f"Pairwise agreement — {platform_b} vs {platform_a}")
@@ -346,6 +337,23 @@ with tabs[0]:
                 f"(mean diff {ba['mean_diff']:.3f} ± 1.96 SD) · "
                 f"drift {drift['drift_per_day']:.4f} units/day (p = {drift['p_value']:.4f})"
             )
+        st.subheader("Descriptive statistics")
+        multi_rows = []
+        for p in selected_params:
+            for platform, sub in filtered.groupby("platform"):
+                row = stats_mod.descriptive_stats(sub[p])
+                row["parameter"] = p
+                row["platform"] = platform
+                multi_rows.append(row)
+        df_summary = pd.DataFrame(multi_rows)
+
+        # Put parameter first and platform second.
+        cols = ["parameter", "platform"] + [
+            c for c in df_summary.columns if c not in ["parameter", "platform"]
+        ]
+        df_summary = df_summary[cols]
+
+        st.dataframe(df_summary.style.format(precision=3), use_container_width=True, hide_index=True)
 
 
 # ---------------------------------------------------------------------------
