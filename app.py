@@ -429,8 +429,8 @@ with tabs[3]:
             with c2:
                 st.plotly_chart(plotting.bland_altman_plot(matched, platform_a, platform_b, agreement_param), use_container_width=True)
             st.plotly_chart(plotting.residual_plot(matched, platform_a, platform_b, agreement_param), use_container_width=True)
-        '''
-        if len(selected_params) > 1:
+        
+        if len(selected_params) > 10:
             st.subheader("Correlation matrix across parameters")
             corr_platform = st.selectbox("Platform for correlation matrix", ["(pooled)"] + selected_platforms)
             st.plotly_chart(
@@ -440,7 +440,7 @@ with tabs[3]:
                 ),
                 use_container_width=True,
             )
-        '''
+        
         st.subheader("Platform × time heatmap")
         heat_freq = st.select_slider("Bucket size", options=["1H", "6H", "1D", "1W"], value="1D")
         st.plotly_chart(plotting.platform_heatmap(filtered, agreement_param, freq=heat_freq), use_container_width=True)
