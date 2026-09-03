@@ -270,7 +270,7 @@ if not selected_params:
 
 param = selected_params[0]  # primary parameter driving single-parameter views below
 
-st.title("🌦️ Weather Platform Comparison Dashboard")
+st.title("🌦️ Hourly Observations Comparison on Channel Site ")
 st.caption(
     f"{len(filtered):,} readings · "
     f"{start_date.strftime(DATE_FMT)} – {end_date.strftime(DATE_FMT)} · "
