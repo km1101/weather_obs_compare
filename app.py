@@ -190,7 +190,8 @@ else:
 st.sidebar.subheader("Platforms")
 selected_platforms = st.sidebar.multiselect(
     "Platforms to compare", options=all_platforms,
-    default=all_platforms[: min(4, len(all_platforms))],
+    # default=all_platforms[: min(4, len(all_platforms))],
+    default=[all_platforms[i] for i in [0, 2] if i < len(all_platforms)],
     help="Add more platforms",
 )
 
