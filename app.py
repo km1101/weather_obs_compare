@@ -450,6 +450,12 @@ with tabs[3]:
 # Outliers & Data Quality tab
 # ---------------------------------------------------------------------------
 with tabs[4]:
+    dq_param = st.selectbox(
+        "Parameter", options=ordered_params,
+        index=ordered_params.index(param) if param in ordered_params else 0,
+        key="dataquality_param",
+    )
+
     if outlier_filter_enabled and outlier_removed_summary is not None:
         st.subheader(f"General outlier filtering ({outlier_method}, threshold={outlier_threshold:.1f})")
         st.caption(
@@ -464,23 +470,23 @@ with tabs[4]:
         st.caption("General outlier filtering is currently disabled — enable it in the sidebar to clean the data before analysis.")
 
     st.subheader("Range violations (physically implausible readings)")
-    range_flags = stats_mod.detect_range_violations(filtered, param)
+    range_flags = stats_mod.detect_range_violations(filtered, dq_param)
     n_range = int(range_flags.sum())
-    st.write(f"{n_range} reading(s) outside the plausible range for {param}.")
+    st.write(f"{n_range} reading(s) outside the plausible range for {dq_param}.")
     if n_range:
-        st.dataframe(filtered.loc[range_flags, ["timestamp", "platform", param]], use_container_width=True)
+        st.dataframe(filtered.loc[range_flags, ["timestamp", "platform", dq_param]], use_container_width=True)
 
     st.subheader("Spike detection (single-point jumps)")
     spike_platform = st.selectbox("Platform", selected_platforms, key="spike_platform")
-    spike_series = filtered[filtered["platform"] == spike_platform].set_index("timestamp")[param].dropna()
+    spike_series = filtered[filtered["platform"] == spike_platform].set_index("timestamp")[dq_param].dropna()
     spikes = stats_mod.detect_spikes(spike_series)
-    st.write(f"{int(spikes.sum())} spike(s) detected for {spike_platform} / {param}.")
+    st.write(f"{int(spikes.sum())} spike(s) detected for {spike_platform} / {dq_param}.")
     if spikes.any():
         st.dataframe(spike_series[spikes].rename("value").reset_index(), use_container_width=True)
 
     if pair_ready:
         st.subheader("Extreme differences (matched-pair outliers)")
-        matched_full = get_matched(param)
+        matched_full = get_matched(dq_param)
         if not matched_full.empty:
             diff_mask = stats_mod.detect_diff_outliers(matched_full, platform_a, platform_b)
             st.write(f"{int(diff_mask.sum())} extreme difference(s) out of {len(matched_full)} matched pairs.")
@@ -489,7 +495,7 @@ with tabs[4]:
 
     st.subheader("Missing data — sample counts per platform")
     missing_freq = st.select_slider("Bucket size", options=["1H", "6H", "1D"], value="1D", key="missing_freq")
-    st.dataframe(stats_mod.missing_data_summary(filtered, param, freq=missing_freq), use_container_width=True)
+    st.dataframe(stats_mod.missing_data_summary(filtered, dq_param, freq=missing_freq), use_container_width=True)
 
 # ---------------------------------------------------------------------------
 # Export tab
