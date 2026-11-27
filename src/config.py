@@ -22,6 +22,8 @@ PLATFORM_MAPPING: dict[int, str] = {
     62047: "TH2_Sys2",
     36089: "Mobilis_Sys1",
     44912: "Mobilis_Sys2",
+    79095: "LV10 Sys1",
+    79072: "LV10 Sys2",
 }
 
 # Reverse lookup, built automatically.
